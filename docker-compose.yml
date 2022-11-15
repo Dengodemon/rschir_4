@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - 8080:8080
+    volumes:
+     - ./www/stat:/var/www/stat
+     - ./default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - data
+  php:
+    hostname: rschir.dev
+    build:
+      ./www
+    volumes:
+      - ./www/din:/var/www/anton
+      - ./ports.conf:/etc/apache2/ports.conf
+      - ./000-default.conf:/etc/apache2/sites-available/000-default.conf
+    depends_on:
+      - data
+  data:
+    image: mariadb:latest
+    restart: always
+    environment:
+     MARIADB_ROOT_PASSWORD: root
+    volumes:
+        - ./sql:/docker-entrypoint-initdb.d
+       
